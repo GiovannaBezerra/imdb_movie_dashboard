@@ -11,82 +11,140 @@ url = 'https://www.imdb.com/search/title/?groups=top_250&sort=user_rating'
 response = requests.get(url)
 soup = BeautifulSoup(response.text, "html.parser")
 
-# Index:
-page_index = [a.text.strip('.') for a in soup.select('h3.lister-item-header span[class~=lister-item-index]')]
-print(len(page_index))
-print(page_index[0:5])
+# Creating empty lists to store values:
+indexes = []
+movies = []
+links = []
+years = []
+certificates = []
+genres = []
+runtimes = []
+rates = []
+metascores = []
+summaries = []
+directors = []
+stars = []
+votes = []
+gross = []
+rank = []
+images = []
 
-# Movies:
-movies = [a.text.strip() for a in soup.select('h3.lister-item-header a')]
-print(len(movies))
-print(movies[0:5])
+# Getting page 1:
+headers = {
+    "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3538.102 Safari/537.36 Edge/18.19582"
+}
+url = 'https://www.imdb.com/search/title/?groups=top_250&sort=user_rating'
+response = requests.get(url,headers=headers)
+soup = BeautifulSoup(response.text, "html.parser")
 
-# Year:
-year = [a.text.strip('()') for a in soup.select('h3.lister-item-header span[class~=lister-item-year]')]
-print(len(year))
-print(year[0:5])
+# Splitting movies by content:
+movie_content = soup.find_all('div', class_ = 'lister-item mode-advanced')
 
-# Run time:
-runtime = [a.text.strip() for a in soup.select('p.text-muted span[class~=runtime]')]
-print(len(runtime))
-print(runtime[0:5])
+# Getting data for each content:
+for content in movie_content:
+    # Getting the index:
+    if content.h3.find('span', class_='lister-item-index') is not None:
+        index = content.h3.find('span', class_='lister-item-index').text.strip('.')
+        indexes.append(index)
+    else:
+        indexes.append("")
+    
+    # Getting Movie Title and Link:
+    if content.h3.a is not None:
+        movie = content.h3.a.text
+        movies.append(movie)
+        link = 'https://www.imdb.com'+ content.h3.a.get('href')
+        links.append(link)
+    else:
+        movies.append("")
+        links.append("")
+        
+    # Getting Year:
+    if content.h3.find('span', class_='lister-item-year') is not None:
+        year = content.h3.find('span', class_='lister-item-year').text.strip('()')
+        years.append(year)
+    else:
+        years.append("")
+    
+    # Getting Certificate:
+    if content.p.find('span', class_ = 'certificate') is not None:
+        certificate = content.p.find('span', class_ = 'certificate').text
+        certificates.append(certificate)
+    else:
+        certificates.append("")
+    
+    # Getting Run Time:
+    if content.p.find('span', class_='runtime') is not None:
+        runtime = content.p.find('span', class_='runtime').text
+        runtimes.append(runtime)
+    else:
+        runtimes.append(runtime)
+    
+    # Getting Genre:
+    if content.p.find('span', class_='genre') is not None:
+        genre = content.p.find('span', class_='genre').text.strip()
+        genres.append(genre)
+    else:
+        genres.append("")
+    
+    # Getting Rate:
+    if content.strong is not None:
+        rate = content.strong.text
+        rates.append(rate)
+    else:
+        rates.append("")
+    
+    # Getting Metascore:
+    if content.find('span', class_='metascore favorable') is not None:
+        metascore = content.find('span', class_='metascore favorable').text
+        metascores.append(metascore)
+    else:
+        metascores.append("")
+        
+    # Getting Summary:
+    if content.find_all('p', class_='text-muted')[1] is not None:
+        summary = content.find_all('p', class_='text-muted')[1].text.strip()
+        summaries.append(summary)
+    else:
+        summaries.append("")
+    
+    # Getting Directors:
+    if content.select('a[href*="_dr_"]') is not None:
+        director = [x.text for x in content.select('a[href*="_dr_"]')]
+        directors.append(director)
+    else:
+        directors.append("")
+    
+    # Getting Stars:
+    if content.select('a[href*="_st_"]') is not None:
+        star = [x.text for x in content.select('a[href*="_st_"]')]
+        stars.append(star)
+    else:
+        stars.append("")
 
-# Genre:
-genre = [a.text.strip() for a in soup.select('p.text-muted span[class~=genre]')]
-print(len(genre))
-print(genre[0:5])
-
-# Rating:
-rate = [a.text.strip() for a in soup.select('div.inline-block span[class~=value]')]
-print(len(rate))
-print(rate[0:5])
-
-# Summary:
-summary = [a.text.strip() for a in soup.select('div.lister-item-content p:nth-of-type(2)')]
-print(len(summary))
-print(summary[0:5])
 
 # Votes:
-votes = [a.attrs.get('data-value') for a in soup.select(
-            'div.lister-item-content p[class~=sort-num_votes-visible] span:nth-of-type(2)')]
-print(len(votes))
-print(votes[0:5])
+#conteudo.select('p[class~=sort-num_votes-visible] span[name~=nv]')[0]
 
 # Gross:
-gross = [a.attrs.get('data-value') for a in soup.select(
-            'div.lister-item-content p[class~=sort-num_votes-visible] span:nth-of-type(5)')]
-print(len(gross))
-print(gross[0:5])
+#conteudo.select('p[class~=sort-num_votes-visible] span[name~=nv]')[1]
 
-# Top 250 rank:
-rank = [a.attrs.get('data-value') for a in soup.select(
-            'div.lister-item-content p[class~=sort-num_votes-visible] span:nth-of-type(8)')]
-print(len(rank))
-print(rank[0:5])
+# Rank:
+#conteudo.select('p[class~=sort-num_votes-visible] span[name~=nv]')[2]
 
-# URL images:
-images = [a.img.get('loadlate') for a in soup.select('div.lister-item-image a')]
-print(len(images))
-print(images[0:5])
 
-### CERTIFICATE: NEEDS IMPROVEMENT
-# ver https://gist.github.com/alexanderldavis/628d51405d38bc1d6c45c7eaec9bbd4b para resolver a 
-# questão do filme sem a classificacao etaria
+# Images:
+#conteudo.select('div.lister-item-image a')
 
-# Certificate:
-cert = [a.text.strip() for a in soup.select('p.text-muted span[class~=certificate]')]
+df = pd.DataFrame({'index': indexes,'movie_title': movies,
+                   'link': links,'year': years,
+                   'certificate': certificates,'runtime': runtimes,
+                   'genre': genres,'rate': rates,
+                   'metascore':metascores,'summary':summaries,
+                   'directors':directors,'stars':stars})
 
-### METASCORE: NEEDS IMPROVEMENT
-# Metascore:
-metascore = [a.text.strip() for a in soup.select('div.inline-block span[class~=metascore]')]
+print(df.head())
 
-### DIRECTOR AND STARS: NEEDS IMPROVEMENT
-# Director:
-director = [a.text.strip() for a in soup.select('div.lister-item-content p:nth-of-type(3) a:nth-of-type(1)')]
 
-crew1 = [a.text.strip() for a in soup.select('div.lister-item-content p:nth-of-type(3) a:nth-of-type(2)')]
-crew2 = [a.text.strip() for a in soup.select('div.lister-item-content p:nth-of-type(3) a:nth-of-type(3)')]
-crew3 = [a.text.strip() for a in soup.select('div.lister-item-content p:nth-of-type(3) a:nth-of-type(4)')]
-crew4 = [a.text.strip() for a in soup.select('div.lister-item-content p:nth-of-type(3) a:nth-of-type(5)')]
 
-soup.select('div.lister-item-content p:nth-of-type(3) a:nth-of-type(6)')
