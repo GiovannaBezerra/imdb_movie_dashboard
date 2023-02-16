@@ -1,4 +1,4 @@
-# This program scrape data from IMDB's "Top 250" movies. After collecting and processing data, the dataset is available for creating
+# This program scrape data from IMDB's "Top 250" movies. After collecting and processing data, the data set is available for creating
 # various types of visualizations.
 
 # The information I gather from each movie are:
@@ -168,6 +168,17 @@ df = pd.DataFrame({'movie_title': movies,'link': links,'year': years,
                    'genre': genres,'rate': rates,'metascore':metascores,
                    'summary':summaries,'directors':directors,'stars':stars,
                    'votes':votes,'gross':grosses,'image':images})
+
+# Cleaning 'year' column and converting type:
+df.year = df.year.str.extract('(\d+)').astype('int64')
+
+# Converting type of 'rate' column
+df.rate = df.rate.astype('float')
+
+# Cleaning 'metascore' column and converting type:
+df.metascore = df.metascore.str.extract('(\d+)')
+df.metascore = pd.to_numeric(df.metascore, errors='coerce')
+
 
 print(df.shape)
 print(df.head())
