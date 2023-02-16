@@ -21,6 +21,7 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import re
 
 # Creating empty lists to store values:
 movies = []
@@ -179,9 +180,25 @@ df.rate = df.rate.astype('float')
 df.metascore = df.metascore.str.extract('(\d+)')
 df.metascore = pd.to_numeric(df.metascore, errors='coerce')
 
+# Cleaning 'directors' column:
+df.directors = df.directors.apply(lambda x: ', '.join(x))
 
+# Cleaning 'stars' column:
+df.stars = df.stars.apply(lambda x: ', '.join(x))
+
+# Cleaning 'votes' column and converting type:
+df.votes = df.votes.str.replace(',', '').astype(int)
+
+# Cleaning 'gross' column and converting type:
+df.gross = df.gross.apply(lambda x: re.sub("#\d+","",x))
+df.gross = df.gross.map(lambda x: x.lstrip('$').rstrip('M'))
+df.gross = pd.to_numeric(df.gross, errors='coerce')
+
+# Final data set:
 print(df.shape)
 print(df.head())
+print(df.info())
+
 
 
 
