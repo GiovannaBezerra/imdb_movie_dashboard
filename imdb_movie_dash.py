@@ -19,42 +19,82 @@ from dash import Dash, html, dcc, dash_table, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 # Getting data:
 exec(open('imdb_movie_getdata.py').read())
 
+dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 
 # App Create:
 app = Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
 
+# Gráfico Rating x Votes:
+df2=df.sort_values('votes')
+df2=df2.reset_index(drop=True)
 
-fig_rating_votes = go.Figure()
+fig_rate_votes=make_subplots(specs=[[{"secondary_y": True}]])
 
-fig_rating_votes.add_trace(
-    go.Scatter(
-        x=df.movie_title, y=df.votes.loc[0:20].sort_values(),
-        name = 'Votes',
-        mode = 'lines',
-        line = dict(width=0.5, color='blue'),
-        stackgroup = 'one'
-    ))
+fig_rate_votes.add_trace(
+    go.Scatter(x=df2.movie_title,
+               y=df2.votes, 
+               name='Votes', 
+               mode='lines', 
+               hovertemplate=None,
+               line=dict(width=0.5, color='#325d81'),
+               stackgroup='one',
+               opacity=0.8),
+    secondary_y=True,
+)
 
 
+fig_rate_votes.add_trace(
+    go.Scatter(x=df2.movie_title,
+               y=df2.rate, 
+               name='Rate', 
+               mode='lines',
+               hovertemplate=None,
+               line=dict(width=0.5, color='#396a93'),
+               stackgroup='one'
+               ),
+    secondary_y=False,
+)
+
+fig_rate_votes.update_layout(
+    margin=dict(l=20, r=20, t=20, b=20),
+    paper_bgcolor='rgba(0,0,0,0)', 
+    plot_bgcolor='#f2f2f2',
+    autosize = False,
+    width = 600,
+    height = 400,
+    font_family = 'Arial',
+    font_color = 'White',
+    font_size = 14,
+    hovermode="x unified",
+    hoverlabel=dict(font_color='gray'),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+)
+
+fig_rate_votes.update_xaxes(visible=False)
+fig_rate_votes.update_yaxes(title_text="<b>Rates</b>", secondary_y=False)
+fig_rate_votes.update_yaxes(title_text="<b>Votes</b>", secondary_y=True)
+
+# Grafico Year x Gross:
 fig_year_gross = go.Figure()
 
 df.gross = df.gross.fillna(0)
-df = df.sort_values('gross')
+df3 = df.sort_values('gross')
 
 fig_year_gross.add_trace(
     go.Scatter(
-        x=df.year, y=df.movie_title,
+        x=df3.year, y=df3.movie_title,
         text = df.gross,
         hovertemplate = '<b>Gross:</b> $ %{text}M' + '<br><b>Year:</b> %{x}' + '<br><b>Title:<b> %{y}',
         mode = 'markers',
-        marker = dict(color = df.gross, 
-                      size = df.gross, 
+        marker = dict(color = df3.gross, 
+                      size = df3.gross, 
                       sizemode = 'area', 
-                      sizeref = 2.*max(df.gross)/(50.**2),
+                      sizeref = 2.*max(df3.gross)/(50.**2),
                       showscale=True)
     ))
 
@@ -73,15 +113,12 @@ fig_year_gross.update_layout(
     font_size = 14
 )
 
-
-
-#tabs_styles = {'height': '4vh', 'width': '12vw', "background": "#323130",
-#               'border': 'grey', 'border-radius': '4px', 'border-style': 'solid', 'border-color': 'grey'}
-
+# Tabs styles:
 
 tabs_styles = {
     'height': '32px', 
     'width': '500px',
+    'align-items': 'center',
     'border-radius': '4px'
 }
 
@@ -129,7 +166,8 @@ app.layout = dbc.Container(html.Div(
      dbc.Row([dbc.Col(html.Div([
                                 html.H2('RATING X VOTES'),
                                 html.Hr(),
-                                dcc.Graph(figure=fig_rating_votes)
+                                dcc.Graph(figure=fig_rate_votes),
+                                dcc.Slider(0, 250, 50, value = 50, className="mt-4")
                                 ]
                                 )
                     ),
@@ -142,6 +180,9 @@ app.layout = dbc.Container(html.Div(
                                         ], style = tab_style, selected_style=tab_selected_style),
                                     dcc.Tab(label='Tab two', children=[
                                         html.H3('Conteúdo da tabela dois')
+                                        ], style = tab_style, selected_style=tab_selected_style),
+                                    dcc.Tab(label='Tab three', children=[
+                                        html.H3('Conteúdo da tabela três')
                                         ], style = tab_style, selected_style=tab_selected_style)
                                     ], style = tabs_styles)
                                 ]
@@ -166,7 +207,7 @@ app.layout = dbc.Container(html.Div(
             ]
             )
 ]
-)
+), className="dbc"
 )
 
 if __name__ == '__main__':
