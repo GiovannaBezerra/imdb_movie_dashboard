@@ -179,6 +179,7 @@ df.rate = df.rate.astype('float')
 # Cleaning 'metascore' column and converting type:
 df.metascore = df.metascore.str.extract('(\d+)')
 df.metascore = pd.to_numeric(df.metascore, errors='coerce')
+df.metascore = df.metascore.fillna(0)
 
 # Cleaning 'directors' column:
 df.directors = df.directors.apply(lambda x: ', '.join(x))
@@ -193,11 +194,11 @@ df.votes = df.votes.str.replace(',', '').astype(int)
 df.gross = df.gross.apply(lambda x: re.sub("#\d+","",x))
 df.gross = df.gross.map(lambda x: x.lstrip('$').rstrip('M'))
 df.gross = pd.to_numeric(df.gross, errors='coerce')
+df.gross = df.gross.fillna(0)
 
 # Final data set:
 print(df.shape)
-print(df.head())
-print(df.info())
+print('Successfully run')
 
 
 
