@@ -1,56 +1,35 @@
-#FUNDAMENTAL STOCK VALUATION DASHBOARD
+# IMDB MOVIE DASHBOARD
 
-# The program build a dashboard using dash e plotly to analyze fundamental financial data informations by companies listed
-# in Brazilian stock market, source: https://www.fundamentus.com.br/).
-# The dashboard shows companies by each indicator and the correspondent average. In addition, it's possible downloading to excel file and 
-# updating sector and subsector data by demand.
+# This program build a dashboard using dash e plotly to view and analyze IMDb Top 250 films.
+# IMDb (Internet Movie Database) is an online database of information related to films, television series, 
+# podcasts, home videos, video games, and streaming content online – including cast, production crew 
+# and personal biographies, plot summaries, trivia, ratings, and fan and critical reviews.
 
-
-
-
-
-# Questions:
-# Quais generos aparecem mais entre os 250 top? Quais os genêros favoritos?
-# Quais diretores aparecem em mais filmes? 
-# Quais atores aparecem em mais filmes?
-# Linha do tempo de lançamento dos top 20 filmes.
-# Quais os 10 filmes com maior orçamento?
+# With this work, we intend to aswer some questions:
+# 1. Is there any relationship between a movie's relase date and its gross?
+# 2. What about the amount of rating and votes quantity?
+# 3. What are the favorite movie genres?
+# 4. What are the most popular film directors?
+# 5. What are the most popular actors or actresses?
 
 
-# Filmes com maior rating
-# Filmes com maior metascore (nota geral da obra no Metacritic, um site que agrega as avaliações e notas de mídias especializadas.the metascore is a weighted average of many reviews coming from reputed critics. The Metacritic team reads the reviews and assigns each a 0–100 score, which is then given a weight, mainly based on the review’s quality and source.)
-# Filmes com mais votos
-# Quais filmes com maior duração
-# Espaço para consulta
-
-### NOT IMAGE AVAILABLE
-#'https://t3.ftcdn.net/jpg/03/45/05/92/240_F_345059232_CPieT8RIWOUk4JqBkkWkIETYAkmz2b75.jpg'
-
-
-#Import modules:
-from dash import Dash, html, dcc, dash_table, Input, Output
+# Import modules:
 import dash_bootstrap_components as dbc
-import plotly.express as px
-import plotly.graph_objs as go
-from plotly.subplots import make_subplots
+from dash import Dash, html, dcc, dash_table, Input, Output
 from dash_bootstrap_templates import load_figure_template
-from dash import Dash, dash_table
+import plotly.express as px
+from plotly.subplots import make_subplots
 
 # Getting data:
 exec(open('imdb_movie_getdata.py').read())
 
-# Incluir no file de getdata:
-df.gross = df.gross.fillna(0)
-df.metascore = df.metascore.fillna(0)
-
-
+## Data preprocess:
 
 # Creating list of MOVIES:
 movie_list = [x for x in df.movie_title]
 movie_list.sort()
 # Creating a df ordered by MOVIE_TITLE:
 df_movie = df.sort_values('movie_title')
-
 
 # Creating list of GENRES:
 genres = [x.split(',') for x in df.genre]
@@ -73,7 +52,6 @@ df_genre_count = pd.DataFrame({'genre_ord': genre_list,'count_genre': genre_coun
 df_genre_count = df_genre_count.sort_values('count_genre',ascending=False).reset_index(drop=True)
 df_genre_count = df_genre_count.loc[0:9,]
 
-
 # Creating list of DIRECTORS:
 directors = [x.split(',') for x in df.directors]
 director_list=[]
@@ -94,7 +72,6 @@ director_count = [df_director[df_director.directors.str.contains(i)].shape[0] fo
 df_director_count = pd.DataFrame({'director_ord': director_list,'count_director': director_count})
 df_director_count = df_director_count.sort_values('count_director',ascending=False).reset_index(drop=True)
 df_director_count = df_director_count.loc[0:9,]
-
 
 # Creating list of STARS:
 stars = [x.split(',') for x in df.stars]
@@ -117,115 +94,123 @@ df_stars_count = pd.DataFrame({'stars_ord': stars_list,'count_stars': stars_coun
 df_stars_count = df_stars_count.sort_values('count_stars',ascending=False).reset_index(drop=True)
 df_stars_count = df_stars_count.loc[0:9,]
 
+## Set style:
 
-dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
-
-
-
-load_figure_template("darkly")
+# Setting Darkly style:
+dbc_css = 'https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css'
+load_figure_template('darkly')
 
 # Tabs styles:
-tabs_styles = {
-   'height': '32px', 
-   'width': '400px',
-    'align-items': 'center',
-    'border-radius': '4px'
-}
+tabs_styles = {'height':'32px','width':'400px','align-items':'center','border-radius':'4px'}
 
-tab_style = {
-    "background": "	#133955",
-    'border-style': 'solid',
-    'border-color': 'grey',
-    'border-radius': '4px',
-    'align-items': 'center',
-    'padding': '5px',
-    'fontWeight': 'bold',
-}
+tab_style = {'background':'#133955','border-style':'solid','border-color':'grey',
+             'border-radius':'4px','align-items':'center','padding':'5px','fontWeight':'bold'}
 
-tab_selected_style = {
-    'backgroundColor': 'SlateGrey',
-    'border-style': 'solid',
-    'border-color': 'grey',
-    'border-radius': '4px',
-    'align-items': 'center',
-    'color': 'white',
-    'padding': '5px'
-}
+tab_selected_style = {'backgroundColor':'SlateGrey','border-style':'solid','border-color':'grey',
+                      'border-radius':'4px','align-items':'center','color':'white','padding':'5px'}
 
 
 # App Create:
 app = Dash(__name__,external_stylesheets=[dbc.themes.DARKLY,dbc_css])
 
-
 # Creating lay out:
-
 app.layout = dbc.Container(html.Div(
-    [dbc.Row([dbc.Col(html.Div([
-                                html.Br(),
-                                html.H1('IMDB MOVIE DASHBOARD'),
-                                html.Hr(),
-                                html.P('Movie dashboard to view and analyze IMDB films')
-                                ]
-                                ),width=10
+    [dbc.Row(html.Br()),
+     dbc.Row([
+            dbc.Col(html.Div([html.H2('IMDB MOVIE DASHBOARD'),]),width={'size':8,'order':'first'}
                     ),
-              dbc.Col(html.Div([
-                                html.Img(src='https://cdn-icons-png.flaticon.com/512/4618/4618701.png',
-                                         alt='fig-header',width=90 ,height=90
-                                         )
-                                ]
-                                ),width=2
-                    )
-            ]
-            ),html.Br(),
+            dbc.Col(html.Div([html.Img(src='https://cdn-icons-png.flaticon.com/512/9126/9126790.png',
+                                       alt='fig-header',width=50 ,height=50
+                                       )]),width={'size':1,'order':'last'},align='right'
+                    ),           
+            ],justify='between'),
+     dbc.Row([html.Hr(),
+              dcc.Markdown('''
+              This is a movie dashboard to view and analyze IMDb "Top 250" films.      
+              [IMDb (Internet Movie Database)](https://www.imdb.com/) is an online database of 
+              information related to films, television series, podcasts, home videos, video games, 
+              and streaming content online, including cast, production crew and personal biographies, 
+              plot summaries, trivia, ratings, and fan and critical 
+              reviews. *[source: wikipedia](https://en.wikipedia.org/wiki/IMDb)*
+              '''),
+            ],className='dbc'),
      dbc.Row((html.Div([
                         html.H4('MOVIE CHARTS'),
                         html.Hr(),
                         dcc.Tabs([
-                                dcc.Tab(label='Release date x Gross', children=[
+                                dcc.Tab(label='Release Date x Gross', children=[
                                     html.Br(),
                                     dcc.Graph(id='graph_year_gross'),
                                     html.Br(),
-                                    dcc.RangeSlider(1920,2030,10,value=[1990,2030],id='slider_year_gross',className='dbc',
-                                                marks={i: '{}'.format(i) for i in range(1920,2030,10)})
+                                    dcc.RangeSlider(1920,2030,10,value=[1990,2030],
+                                                    id='slider_year_gross',
+                                                    className='dbc',
+                                                    marks={i: '{}'.format(i) for i in range(1920,2030,10)})
                                     ], style = tab_style, selected_style=tab_selected_style),
-                                dcc.Tab(label='Rating x Votes qty', children=[
+                                dcc.Tab(label='Rating x Votes Quantity', children=[
                                     html.Br(),
                                     dcc.Graph(id='graph_rate_votes'),
                                     html.Br(),
-                                    dcc.RangeSlider(8.0,9.4,0.2,value=[8.8,9.4],id='slider_rate_votes',className='dbc')
+                                    dcc.RangeSlider(8.0,9.4,0.2,value=[8.8,9.4],
+                                                    id='slider_rate_votes',
+                                                    className='dbc')
                                     ], style = tab_style, selected_style=tab_selected_style)
                                 ], style = tabs_styles)
-                            ]
-                            )
-            )
-        ),html.Br(),
+                            ])
+            )),html.Br(),
      dbc.Row((html.Div([
                         html.H4('MOVIE DETAILS'),
                         html.Hr(),
-                        dcc.Dropdown(movie_list,'1917',id='drop_movies',className='dbc'),
+                        dcc.Dropdown(movie_list,'A Beautiful Mind',id='drop_movies',className='dbc'),
                         html.Br(),
                         dbc.Row([
                                 dbc.Col(dbc.Card([
                                             dbc.Row([
                                                 dbc.Col(dbc.CardImg(id='img_movie'),width=1),
-                                                dbc.Col(dbc.CardBody([dbc.CardLink('1917',id='link_movie',href=df_movie.link[0]),
+                                                dbc.Col(dbc.CardBody([dbc.CardLink('A Beautiful Mind',
+                                                                                   id='link_movie',
+                                                                                   href=df_movie.link[0]),
                                                                     html.P(id='summary_movie')
                                                                     ]))],className="g-0 d-flex align-items-center")
                                                 ])),
                                 ]),
                         html.Br(),
                         dbc.Row([
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('RATE',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='rate_movie'),className="card-text")])),
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('METASCORE',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='metascore_movie'),className="card-text")])),
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('CERTIFICATE',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='certificate_movie'),className="card-text")])),
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('RUNTIME',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='runtime_movie'),className="card-text")])),
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('GROSS(M-USD)',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='gross_movie'),className="card-text")])),
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('GENRE',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='genre_movie'),className="card-text")]),width=4)
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('RATE',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='rate_movie'),
+                                                               className="card-text")])),
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('METASCORE',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='metascore_movie'),
+                                                               className="card-text")])),
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('CERTIFICATE',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='certificate_movie'),
+                                                               className="card-text")])),
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('RUNTIME',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='runtime_movie'),
+                                                               className="card-text")])),
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('GROSS (M-USD)',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='gross_movie'),
+                                                               className="card-text")])),
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('GENRE',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='genre_movie'),
+                                                               className="card-text")]),width=4)
                                 ],className='h-5'),
                         html.Br(),
                         dbc.Row([
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('DIRECTORS',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='directors_movie'),className="card-text")]),width=4),
-                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('STARS',style={'fontSize': 11}),className="card-title"),dbc.CardBody(html.H6(id='stars_movie'),className="card-text")]),width=8)
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('DIRECTORS',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='directors_movie'),
+                                                               className="card-text")]),width=4),
+                                dbc.Col(dbc.Card([dbc.CardHeader(html.P('STARS',style={'fontSize': 11}),
+                                                                 className="card-title"),
+                                                  dbc.CardBody(html.H6(id='stars_movie'),
+                                                               className="card-text")]),width=8)
                                 ])
                         ]
                         )
@@ -243,9 +228,12 @@ app.layout = dbc.Container(html.Div(
                                 data=df_genre.to_dict('records'),
                                 columns=[{'name': i.upper(), 'id': i} for i in df_genre.columns],
                                 id='table_genre',
-                                style_table={'maxWidth': 700,'maxHeight': 400,'overflowX':'auto','overflowY':'auto'},
-                                style_cell={'maxWidth': '140px','fontSize':11,'textAlign':'center','backgroundColor': '#303030','whiteSpace':'normal'},
-                                style_header={'color':'white','fontSize':11,'fontWeight':'bold','backgroundColor':'#24435c'}
+                                style_table={'maxWidth': 700,'maxHeight': 370,
+                                             'overflowX':'auto','overflowY':'auto'},
+                                style_cell={'maxWidth': '140px','fontSize':11,'textAlign':'center',
+                                            'backgroundColor': '#303030','whiteSpace':'normal'},
+                                style_header={'color':'white','fontSize':11,
+                                              'fontWeight':'bold','backgroundColor':'#24435c'}
                                 ),
                                 ],style = tab_style, selected_style=tab_selected_style),
                         dcc.Tab(label='Directors', value='tab_directors', children=[
@@ -256,9 +244,12 @@ app.layout = dbc.Container(html.Div(
                                 data=df_director.to_dict('records'),
                                 columns=[{'name': i.upper(), 'id': i} for i in df_director.columns],
                                 id='table_director',
-                                style_table={'maxWidth': 700,'maxHeight': 400,'overflowX':'auto','overflowY':'auto'},
-                                style_cell={'maxWidth': '140px','fontSize':11,'textAlign':'center','backgroundColor': '#303030','whiteSpace':'normal'},
-                                style_header={'color':'white','fontsize':11,'fontWeight':'bold','backgroundColor':'#24435c'}    
+                                style_table={'maxWidth': 700,'maxHeight': 370,
+                                             'overflowX':'auto','overflowY':'auto'},
+                                style_cell={'maxWidth': '140px','fontSize':11,'textAlign':'center',
+                                            'backgroundColor': '#303030','whiteSpace':'normal'},
+                                style_header={'color':'white','fontsize':11,
+                                              'fontWeight':'bold','backgroundColor':'#24435c'}    
                                 )
                                 ],style = tab_style, selected_style=tab_selected_style),
                         dcc.Tab(label='Stars', value='tab_stars', children=[
@@ -269,9 +260,12 @@ app.layout = dbc.Container(html.Div(
                                     data=df_stars.to_dict('records'),
                                     columns=[{'name': i.upper(), 'id':i} for i in df_stars.columns],
                                     id='table_stars',
-                                    style_table={'maxWidth': 700,'maxHeight': 400,'overflowX':'auto','overflowY':'auto'},
-                                    style_cell={'maxWidth': '140px','fontSize':11,'textAlign':'center','backgroundColor': '#303030','whiteSpace':'normal'},
-                                    style_header={'color':'white','fontsize':11,'fontWeight':'bold','backgroundColor':'#24435c'}                                                
+                                    style_table={'maxWidth': 700,'maxHeight': 370,
+                                                 'overflowX':'auto','overflowY':'auto'},
+                                    style_cell={'maxWidth': '140px','fontSize':11,'textAlign':'center',
+                                                'backgroundColor': '#303030','whiteSpace':'normal'},
+                                    style_header={'color':'white','fontsize':11,
+                                                  'fontWeight':'bold','backgroundColor':'#24435c'}                                                
                                     )
                                     ],style = tab_style, selected_style=tab_selected_style)
                                 ],id='top_tabs', value='tab_genre', style = tabs_styles)
@@ -285,7 +279,7 @@ app.layout = dbc.Container(html.Div(
 ),className='dbc'
 )
 
-### Update CARDS's movies:
+## Callbacks:
 
 # Update image movie:
 @app.callback(
@@ -319,7 +313,7 @@ def update_card_summary_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].summary.reset_index(drop=True)[0]
     return children
 
-# Update rate movie:
+# Update rate movie card:
 @app.callback(
         Output('rate_movie','children'),
         Input('drop_movies','value'))
@@ -327,7 +321,7 @@ def update_card_rate_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].rate.reset_index(drop=True)[0]
     return children
 
-# Update metascore movie:
+# Update metascore movie card:
 @app.callback(
         Output('metascore_movie','children'),
         Input('drop_movies','value'))
@@ -335,7 +329,7 @@ def update_card_metascore_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].metascore.reset_index(drop=True)[0]
     return children
 
-# Update certificate movie:
+# Update certificate movie card:
 @app.callback(
         Output('certificate_movie','children'),
         Input('drop_movies','value'))
@@ -343,7 +337,7 @@ def update_card_certificate_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].certificate.reset_index(drop=True)[0]
     return children
 
-# Update runtime movie:
+# Update runtime movie card:
 @app.callback(
         Output('runtime_movie','children'),
         Input('drop_movies','value'))
@@ -351,7 +345,7 @@ def update_card_runtime_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].runtime.reset_index(drop=True)[0]
     return children
 
-# Update gross movie:
+# Update gross movie card:
 @app.callback(
         Output('gross_movie','children'),
         Input('drop_movies','value'))
@@ -359,7 +353,7 @@ def update_card_gross_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].gross.reset_index(drop=True)[0]
     return children
 
-# Update genre movie:
+# Update genre movie card:
 @app.callback(
         Output('genre_movie','children'),
         Input('drop_movies','value'))
@@ -367,7 +361,7 @@ def update_card_genre_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].genre.reset_index(drop=True)[0]
     return children
 
-# Update directors movie:
+# Update directors movie card:
 @app.callback(
         Output('directors_movie','children'),
         Input('drop_movies','value'))
@@ -375,16 +369,13 @@ def update_card_directors_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].directors.reset_index(drop=True)[0]
     return children
 
-# Update stars movie:
+# Update stars movie card:
 @app.callback(
         Output('stars_movie','children'),
         Input('drop_movies','value'))
 def update_card_stars_movie(value):
     children = df_movie.loc[df_movie.movie_title == value].stars.reset_index(drop=True)[0]
     return children
-
-
-### Update GRAPH's movies:
 
 # Update RATING X VOTES graph:
 @app.callback(
@@ -408,7 +399,6 @@ def update_graph_rate_votes(value):
 
     return subfig
 
-
 # Update RELEASE DATE X GROSS graph:
 @app.callback(
     Output('graph_year_gross', 'figure'), 
@@ -419,7 +409,6 @@ def update_graph_year_gross(value):
                      color='gross', size='gross', template="darkly", custom_data=['movie_title'])
     fig.update_traces(hovertemplate='<b>Movie: %{customdata[0]}</b>'+'<br><b>Gross:</b> $ %{y}M'+'<br><b>Year:</b> %{x}')
     return fig
-
 
 # Update GENDER table:
 @app.callback(
@@ -433,7 +422,6 @@ def update_table_genre(value):
         df_genre_filtered = df_genre[df_genre.genre.str.contains(str(value))].sort_values('rate', ascending=False)
         data=df_genre_filtered.to_dict('records')
     return data
-
 
 # Update DIRECTOR table:
 @app.callback(
@@ -461,7 +449,7 @@ def update_table_stars(value):
         data=df_stars_filtered.to_dict('records')
     return data
 
-# Update TOP Graph and Text:
+# Update TOP Graph and Title:
 @app.callback(
     Output('top_graph','figure'),
     Output('top_text','children'),
@@ -471,7 +459,7 @@ def update_tops(value):
     if value == 'tab_genre':
         fig = px.bar(df_genre_count,x='count_genre',y='genre_ord',template='darkly')
         fig.update_layout(font_size=12,yaxis=dict(autorange="reversed"),yaxis_title=None,xaxis_title='Quantity of movies')
-        fig.update_traces(hovertemplate='<b>Qty: %{x}</b')
+        fig.update_traces(hovertemplate='<b>Qty: %{x}</b>')
         children = 'TOP TEN GENRE'
 
     elif value == 'tab_directors':
@@ -487,9 +475,6 @@ def update_tops(value):
         children = 'TOP TEN STARS'
 
     return fig, children
-
-
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
