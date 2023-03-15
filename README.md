@@ -1,5 +1,5 @@
 <img src="https://user-images.githubusercontent.com/44107852/225351489-5af6215f-5b7a-485e-9ee9-8296ce33daec.png" align="right"
-     alt="imdb logo" width="90" height="60">     
+     alt="imdb logo" width="100" height="60">     
 # IMDb MOVIE DASHBOARD
 
 <p align="center">
@@ -10,7 +10,7 @@
   <a href="#notes-and-considerations">Notes and considerations</a> •
 </p>
 
-![gif_imdb_complete](https://user-images.githubusercontent.com/44107852/225396984-da7feed3-608d-4a2b-bfa6-af799beccbd3.gif)
+![gif_imdb_complete](https://user-images.githubusercontent.com/44107852/225400194-cb0165fa-dbcd-4741-9fe2-3761586b8be8.gif)
 
 ## Intro 
 
