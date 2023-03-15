@@ -10,7 +10,7 @@
   <a href="#notes-and-considerations">Notes and considerations</a> •
 </p>
 
-[gif]
+![gif_imdb_complete](https://user-images.githubusercontent.com/44107852/225396984-da7feed3-608d-4a2b-bfa6-af799beccbd3.gif)
 
 ## Intro 
 
