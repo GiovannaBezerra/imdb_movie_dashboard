@@ -30,7 +30,7 @@ In summary, some questions should be answered:
 
 ## How it Works  
 
-First of all, the program scrapes and preprocesses data from [Top 250 movies on IMDB](https://www.imdb.com/search/title/?groups=top_250&sort=user_rating) using the python language and the *requests* and *BeautifulSoup* libraries to get the website urls and collect information for each movie like: movie title, year of release, age classification, rating, metascore, directors, cast, gross earnings etc.
+First of all, the program scrapes and preprocesses data from [Top 250 movies on IMDB](https://www.imdb.com/search/title/?groups=top_250&sort=user_rating) using the python language and the *BeautifulSoup* and *requests* libraries to get the website urls and collect information for each movie like: movie title, year of release, age classification, rating, metascore, directors, cast, gross earnings etc.
 
 After, a Dashboard was built using the *Dash* and *Plotly* libraries and their Core, HTML and Bootstrap Components. With the analysis of the data obtained previously, graphs and visualizations were created to answer the initially defined questions.
  
