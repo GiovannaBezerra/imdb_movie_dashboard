@@ -14,6 +14,7 @@
 
 
 # Import modules:
+import pandas as pd
 import dash_bootstrap_components as dbc
 from dash import Dash, html, dcc, dash_table, Input, Output
 from dash_bootstrap_templates import load_figure_template
