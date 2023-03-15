@@ -287,7 +287,10 @@ app.layout = dbc.Container(html.Div(
         Output('img_movie','src'),
         Input('drop_movies','value'))
 def update_card_img_movie(value):
-    src = df_movie.loc[df_movie.movie_title == value].image.reset_index(drop=True)[0]
+    if value == None:
+        src = 'https://t3.ftcdn.net/jpg/03/45/05/92/240_F_345059232_CPieT8RIWOUk4JqBkkWkIETYAkmz2b75.jpg'
+    else:
+        src = df_movie.loc[df_movie.movie_title == str(value)].image.reset_index(drop=True)[0]
     return src
 
 # Update link movie name:
@@ -295,7 +298,10 @@ def update_card_img_movie(value):
         Output('link_movie','children'),
         Input('drop_movies','value'))
 def update_card_link_movie_name(value):
-    children = value
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = value
     return children
 
 # Update link movie:
@@ -303,7 +309,10 @@ def update_card_link_movie_name(value):
         Output('link_movie','href'),
         Input('drop_movies','value'))
 def update_card_link_movie(value):
-    href = df_movie.loc[df_movie.movie_title == value].link.reset_index(drop=True)[0]
+    if value == None:
+        href = 'https://m.imdb.com/'
+    else:
+        href = df_movie.loc[df_movie.movie_title == str(value)].link.reset_index(drop=True)[0]
     return href
 
 # Update summary movie:
@@ -311,7 +320,10 @@ def update_card_link_movie(value):
         Output('summary_movie','children'),
         Input('drop_movies','value'))
 def update_card_summary_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].summary.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].summary.reset_index(drop=True)[0]
     return children
 
 # Update rate movie card:
@@ -319,7 +331,10 @@ def update_card_summary_movie(value):
         Output('rate_movie','children'),
         Input('drop_movies','value'))
 def update_card_rate_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].rate.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].rate.reset_index(drop=True)[0]
     return children
 
 # Update metascore movie card:
@@ -327,7 +342,10 @@ def update_card_rate_movie(value):
         Output('metascore_movie','children'),
         Input('drop_movies','value'))
 def update_card_metascore_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].metascore.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].metascore.reset_index(drop=True)[0]
     return children
 
 # Update certificate movie card:
@@ -335,7 +353,10 @@ def update_card_metascore_movie(value):
         Output('certificate_movie','children'),
         Input('drop_movies','value'))
 def update_card_certificate_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].certificate.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].certificate.reset_index(drop=True)[0]
     return children
 
 # Update runtime movie card:
@@ -343,7 +364,10 @@ def update_card_certificate_movie(value):
         Output('runtime_movie','children'),
         Input('drop_movies','value'))
 def update_card_runtime_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].runtime.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].runtime.reset_index(drop=True)[0]
     return children
 
 # Update gross movie card:
@@ -351,7 +375,10 @@ def update_card_runtime_movie(value):
         Output('gross_movie','children'),
         Input('drop_movies','value'))
 def update_card_gross_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].gross.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].gross.reset_index(drop=True)[0]
     return children
 
 # Update genre movie card:
@@ -359,7 +386,10 @@ def update_card_gross_movie(value):
         Output('genre_movie','children'),
         Input('drop_movies','value'))
 def update_card_genre_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].genre.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].genre.reset_index(drop=True)[0]
     return children
 
 # Update directors movie card:
@@ -367,7 +397,10 @@ def update_card_genre_movie(value):
         Output('directors_movie','children'),
         Input('drop_movies','value'))
 def update_card_directors_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].directors.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].directors.reset_index(drop=True)[0]
     return children
 
 # Update stars movie card:
@@ -375,7 +408,10 @@ def update_card_directors_movie(value):
         Output('stars_movie','children'),
         Input('drop_movies','value'))
 def update_card_stars_movie(value):
-    children = df_movie.loc[df_movie.movie_title == value].stars.reset_index(drop=True)[0]
+    if value == None:
+        children = 'No movie selected'
+    else:
+        children = df_movie.loc[df_movie.movie_title == str(value)].stars.reset_index(drop=True)[0]
     return children
 
 # Update RATING X VOTES graph:
